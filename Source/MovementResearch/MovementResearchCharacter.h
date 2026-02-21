@@ -7,6 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "MovementResearchCharacter.generated.h"
 
+class UCustomCharacterMovementComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
@@ -48,11 +49,18 @@ protected:
 	/** Mouse Look Input Action */
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
+	
+	UPROPERTY(Category=Character, VisibleAnywhere, BlueprintReadOnly)
+	UCustomCharacterMovementComponent* MovementComponent;
 
 public:
 
 	/** Constructor */
 	AMovementResearchCharacter(const FObjectInitializer& ObjectInitializer);	
+	
+	//Add reference to our custom movement component
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE UCustomCharacterMovementComponent* GetCustomCharacterMovement() const { return MovementComponent; }
 
 protected:
 

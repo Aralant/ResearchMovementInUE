@@ -48,7 +48,9 @@ AMovementResearchCharacter::AMovementResearchCharacter(const FObjectInitializer&
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 	
-	//SetOur new Movement component as default
+	//Set Our new Custom Movement component as default
+	MovementComponent = Cast<UCustomCharacterMovementComponent>(GetCharacterMovement());
+	
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
