@@ -52,7 +52,7 @@ protected:
 public:
 
 	/** Constructor */
-	AMovementResearchCharacter();	
+	AMovementResearchCharacter(const FObjectInitializer& ObjectInitializer);	
 
 protected:
 
