@@ -11,19 +11,35 @@ UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class MOVEMENTRESEARCH_API UCustomCharacterMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()
-
-public:
-	// Sets default values for this component's properties
-	UCustomCharacterMovementComponent();
-
-protected:
+private:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
-public:
+	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
+    	                           FActorComponentTickFunction* ThisTickFunction) override;
+	
+	void SweepAndStoreWallHits();
+	
+	UPROPERTY(category = "Character Movement: Climbing", EditAnywhere)
+	int CollisionCapsuleRadius = 50;
+	
+	UPROPERTY(category = "Character Movement: Climbing", EditAnywhere)
+	int CollisionCapsuleHalfHeight = 72;
+	
+	TArray<FHitResult> CurrentWallHits;
+	
+	FCollisionQueryParams ClimbQueryParams;
+protected:
+
+
+public:
+	
+	// Sets default values for this component's properties
+	UCustomCharacterMovementComponent();
+	
+
+
 	
 	virtual void PhysWalking(float deltaTime, int32 Iterations) override;
 };
