@@ -1,0 +1,8 @@
+{
+	"SourceFiles": [
+		"D:\\Work_Project\\ResearchMovementInUE\\Source\\ResearchMovementInUE\\ResearchMovementInUE.Build.cs",
+		"D:\\Work_Project\\ResearchMovementInUE\\Source\\ResearchMovementInUE.Target.cs",
+		"D:\\Work_Project\\ResearchMovementInUE\\Source\\ResearchMovementInUEEditor.Target.cs"
+	],
+	"EngineVersion": "5.6.1"
+}
