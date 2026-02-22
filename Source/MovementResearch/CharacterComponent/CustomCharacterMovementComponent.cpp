@@ -3,7 +3,59 @@
 
 #include "CustomCharacterMovementComponent.h"
 #include "DrawDebugHelpers.h"
+#include "GameFramework/Character.h"
 
+
+bool UCustomCharacterMovementComponent::CanStartClimbing()
+{
+	for (FHitResult& Hit : CurrentWallHits)
+	{
+		const FVector HorizontalNormal = Hit.Normal.GetSafeNormal2D();
+		
+		const float HorizontalDot = FVector::DotProduct(UpdatedComponent->GetForwardVector(), -HorizontalNormal);
+		const float VerticalDot = FVector::DotProduct(Hit.Normal, HorizontalNormal);
+		
+		const float HorizontalDegrees = FMath::RadiansToDegrees(FMath::Acos(HorizontalDot));
+		const bool bIsCeiling = FMath::IsNearlyZero(VerticalDot);
+		
+		if (HorizontalDegrees <= MinHorizontalDegreesToStartClimbing && !bIsCeiling && IsFacingSurface(VerticalDot))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool UCustomCharacterMovementComponent::EyeHeightTrace(const float TraceDistant) const
+{
+	FHitResult UpperEdgeHit;
+	
+	const FVector Start = UpdatedComponent->GetComponentLocation() +
+		(UpdatedComponent->GetUpVector() * GetCharacterOwner()->BaseEyeHeight);
+	const FVector End = Start + UpdatedComponent->GetForwardVector() *TraceDistant;
+	
+	return GetWorld()->LineTraceSingleByChannel(UpperEdgeHit, Start, End, ECC_WorldStatic, ClimbQueryParams);
+}
+
+//
+bool UCustomCharacterMovementComponent::IsFacingSurface(const float Steepness) const
+{
+	constexpr float BaseLength = 80;
+	const float SteepnessMultiplier = 1 + (1 - Steepness) * 5;
+
+	return EyeHeightTrace(BaseLength * SteepnessMultiplier);
+}
+
+void UCustomCharacterMovementComponent::OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation,
+	const FVector& OldVelocity)
+{
+	if (CanStartClimbing())
+	{
+		SetMovementMode(EMovementMode::MOVE_Custom, ECustomMovementMode::CMOVE_Climbing);
+	}
+	
+	Super::OnMovementUpdated(DeltaSeconds, OldLocation, OldVelocity);
+}
 
 // Sets default values for this component's properties
 UCustomCharacterMovementComponent::UCustomCharacterMovementComponent()

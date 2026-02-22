@@ -4,8 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "UObject/ObjectMacros.h"
 #include "CustomCharacterMovementComponent.generated.h"
 
+UENUM(BlueprintType)
+enum ECustomMovementMode
+{
+	CMOVE_Climbing	UMETA(DisplayName = "Climbing"),
+	CMOVE_MAX		UMETA(Hidden),
+};
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class MOVEMENTRESEARCH_API UCustomCharacterMovementComponent : public UCharacterMovementComponent
@@ -21,6 +28,7 @@ private:
 	
 	void SweepAndStoreWallHits();
 	
+	//Collision params to wall detect
 	UPROPERTY(category = "Character Movement: Climbing", EditAnywhere)
 	int CollisionCapsuleRadius = 50;
 	
@@ -30,6 +38,21 @@ private:
 	TArray<FHitResult> CurrentWallHits;
 	
 	FCollisionQueryParams ClimbQueryParams;
+	
+	//Params to decide can char climbing
+	UPROPERTY(category = "Character Movement: Climbing", EditAnywhere, meta = (ClampMin = "1.0", ClampMax = "75.0"))
+	float MinHorizontalDegreesToStartClimbing = 25.0f;
+	
+	bool CanStartClimbing();
+	
+	//Params to check wall height
+	bool EyeHeightTrace(const float TraceDistant) const;
+	
+	bool IsFacingSurface(const float Steepness) const;
+	
+	//Update move
+	virtual void OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity) override;
+	
 protected:
 
 
@@ -37,9 +60,6 @@ public:
 	
 	// Sets default values for this component's properties
 	UCustomCharacterMovementComponent();
-	
-
-
 	
 	virtual void PhysWalking(float deltaTime, int32 Iterations) override;
 };
