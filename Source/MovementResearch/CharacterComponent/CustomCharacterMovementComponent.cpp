@@ -49,7 +49,7 @@ bool UCustomCharacterMovementComponent::IsFacingSurface(const float Steepness) c
 void UCustomCharacterMovementComponent::OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation,
 	const FVector& OldVelocity)
 {
-	if (CanStartClimbing())
+	if (bWantsToClimb)
 	{
 		SetMovementMode(EMovementMode::MOVE_Custom, ECustomMovementMode::CMOVE_Climbing);
 	}
@@ -167,5 +167,18 @@ void UCustomCharacterMovementComponent::PhysWalking(float deltaTime, int32 Itera
 	Super::PhysWalking(deltaTime, Iterations);
 	
 	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, TEXT("Custom movement working"));
+}
+
+void UCustomCharacterMovementComponent::TryClimbing()
+{
+	if (CanStartClimbing())
+	{
+		bWantsToClimb = true;
+	}
+}
+
+void UCustomCharacterMovementComponent::CancelClimbing()
+{
+	bWantsToClimb = false;
 }
 

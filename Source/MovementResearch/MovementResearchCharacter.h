@@ -50,6 +50,13 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 	
+	/** Climb Input Action */
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* ClimbAction;
+	
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* CancelClimbAction;
+	
 	UPROPERTY(Category=Character, VisibleAnywhere, BlueprintReadOnly)
 	UCustomCharacterMovementComponent* MovementComponent;
 
@@ -74,6 +81,11 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+	
+	//climbing functions
+	void Climb(const FInputActionValue& Value);
+	
+	void CancelClimb(const FInputActionValue& Value);
 
 public:
 

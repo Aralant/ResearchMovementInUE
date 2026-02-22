@@ -53,6 +53,7 @@ private:
 	//Update move
 	virtual void OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity) override;
 	
+	bool bWantsToClimb = false;
 protected:
 
 
@@ -62,4 +63,8 @@ public:
 	UCustomCharacterMovementComponent();
 	
 	virtual void PhysWalking(float deltaTime, int32 Iterations) override;
+	
+	void TryClimbing();
+	
+	void CancelClimbing();
 };

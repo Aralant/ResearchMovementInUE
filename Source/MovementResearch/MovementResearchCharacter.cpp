@@ -70,6 +70,10 @@ void AMovementResearchCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMovementResearchCharacter::Look);
+		
+		// Climbing
+		EnhancedInputComponent->BindAction(ClimbAction,	ETriggerEvent::Started, this, &AMovementResearchCharacter::Climb);
+		EnhancedInputComponent->BindAction(CancelClimbAction, ETriggerEvent::Started, this, &AMovementResearchCharacter::CancelClimb);
 	}
 	else
 	{
@@ -93,6 +97,18 @@ void AMovementResearchCharacter::Look(const FInputActionValue& Value)
 
 	// route the input
 	DoLook(LookAxisVector.X, LookAxisVector.Y);
+}
+
+void AMovementResearchCharacter::Climb(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Climb pressed"));
+	MovementComponent->TryClimbing();
+}
+
+void AMovementResearchCharacter::CancelClimb(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Cancel Climb pressed"));
+	MovementComponent->CancelClimbing();
 }
 
 void AMovementResearchCharacter::DoMove(float Right, float Forward)
