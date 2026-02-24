@@ -182,3 +182,14 @@ void UCustomCharacterMovementComponent::CancelClimbing()
 	bWantsToClimb = false;
 }
 
+bool UCustomCharacterMovementComponent::IsClimbing() const
+{
+	return MovementMode == MOVE_Custom && CustomMovementMode == ECustomMovementMode::CMOVE_Climbing;
+}
+
+FVector UCustomCharacterMovementComponent::GetClimbingSurfaceNormal() const
+{
+	return CurrentWallHits.Num() > 0 ? CurrentWallHits[0].Normal : FVector::ZeroVector;
+}
+
+

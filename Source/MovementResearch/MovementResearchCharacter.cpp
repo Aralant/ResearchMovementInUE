@@ -87,6 +87,7 @@ void AMovementResearchCharacter::Move(const FInputActionValue& Value)
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
 	// route the input
+	
 	DoMove(MovementVector.X, MovementVector.Y);
 }
 
@@ -115,19 +116,31 @@ void AMovementResearchCharacter::DoMove(float Right, float Forward)
 {
 	if (GetController() != nullptr)
 	{
-		// find out which way is forward
-		const FRotator Rotation = GetController()->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		FVector ForwardDirection;
+		FVector RightDirection;
+		//CLIMB MODE
+		if (MovementComponent->IsClimbing())
+		{
+			ForwardDirection = FVector::CrossProduct(MovementComponent->GetClimbingSurfaceNormal(), -GetActorRightVector()).GetSafeNormal();
+			RightDirection = FVector::CrossProduct(MovementComponent->GetClimbingSurfaceNormal(), GetActorUpVector().GetSafeNormal());
+		}
+		//NORMAL MODE
+		else
+		{
+			// find out which way is forward
+			const FRotator Rotation = GetController()->GetControlRotation();
+			const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+			// get forward vector
+			ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 
-		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+			// get right vector 
+			RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-		// add movement 
-		AddMovementInput(ForwardDirection, Forward);
-		AddMovementInput(RightDirection, Right);
+			// add movement 
+			AddMovementInput(ForwardDirection, Forward);
+			AddMovementInput(RightDirection, Right);
+		}
 	}
 }
 
