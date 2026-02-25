@@ -3,6 +3,7 @@
 
 #include "CustomCharacterMovementComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/Character.h"
 
 
@@ -55,6 +56,41 @@ void UCustomCharacterMovementComponent::OnMovementUpdated(float DeltaSeconds, co
 	}
 	
 	Super::OnMovementUpdated(DeltaSeconds, OldLocation, OldVelocity);
+}
+
+void UCustomCharacterMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovementMode,
+	uint8 PreviousCustomMode)
+{
+	if (IsClimbing())
+	{
+		//off rotation to mouse because climb on wall
+		bOrientRotationToMovement = false;
+		
+		UCapsuleComponent* Capsule = GetCharacterOwner()->GetCapsuleComponent();
+		if (Capsule != nullptr)
+		{
+			Capsule->SetCapsuleHalfHeight(Capsule->GetUnscaledCapsuleHalfHeight() - ClimbingCollisionShrinkAmount);
+		}
+	}
+	
+	const bool bWasClimbing = PreviousMovementMode == MOVE_Custom && PreviousCustomMode == CMOVE_Climbing;
+	if (bWasClimbing)
+	{
+		bOrientRotationToMovement = true;
+		
+		const FRotator StandRotation = FRotator(0, UpdatedComponent->GetComponentRotation().Yaw, 0);
+		UpdatedComponent->SetRelativeRotation(StandRotation);
+		
+		UCapsuleComponent* Capsule = GetCharacterOwner()->GetCapsuleComponent();
+		if (Capsule != nullptr)
+		{
+			Capsule->SetCapsuleHalfHeight(Capsule->GetUnscaledCapsuleHalfHeight() + ClimbingCollisionShrinkAmount, true);
+		}
+		
+		//After stop climbing reset move
+		StopMovementImmediately();
+	}
+	Super::OnMovementModeChanged(PreviousMovementMode, PreviousCustomMode);
 }
 
 // Sets default values for this component's properties
@@ -190,6 +226,19 @@ bool UCustomCharacterMovementComponent::IsClimbing() const
 FVector UCustomCharacterMovementComponent::GetClimbingSurfaceNormal() const
 {
 	return CurrentWallHits.Num() > 0 ? CurrentWallHits[0].Normal : FVector::ZeroVector;
+}
+
+void UCustomCharacterMovementComponent::PhysCustom(float deltaTime, int32 Iterations)
+{
+	if (CustomMovementMode == ECustomMovementMode::CMOVE_Climbing)
+	{
+		PhysClimbing(deltaTime, Iterations);
+	}
+	Super::PhysCustom(deltaTime, Iterations);
+}
+
+void UCustomCharacterMovementComponent::PhysClimbing(float deltaTime, int32 Iterations)
+{
 }
 
 

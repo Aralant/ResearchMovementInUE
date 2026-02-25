@@ -54,6 +54,11 @@ private:
 	virtual void OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity) override;
 	
 	bool bWantsToClimb = false;
+	
+	virtual void OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode) override;
+	
+	UPROPERTY(Category="Character Movement: Climbing", EditAnywhere, meta=(ClampMin="0.0", ClampMax="80.0"))
+	float ClimbingCollisionShrinkAmount = 30;
 protected:
 
 
@@ -72,4 +77,9 @@ public:
 	
 	UFUNCTION(BlueprintPure)
 	FVector GetClimbingSurfaceNormal() const;
+	
+	virtual void PhysCustom(float deltaTime, int32 Iterations) override;
+	
+	void PhysClimbing(float deltaTime, int32 Iterations);
+	
 };
